@@ -1,8 +1,10 @@
 package pgv.proyectofinal.ui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -22,6 +24,10 @@ public class UIController implements Initializable {
     private TextField userField;
     @FXML
     private PasswordField passField;
+
+    @FXML
+    private Label clientResponse;
+
 
     public UIController(){
         try{
@@ -48,10 +54,18 @@ public class UIController implements Initializable {
         var correo = userField.getText();
         var password = passField.getText();
 
-        MailClient client = new MailClient();
-        if(client.checkConnection(correo,password)) //App.mailScreen();
-            log.info("Login success");
-        log.error("No se pudo logear");
+        Platform.runLater(() -> {
+            MailClient client = new MailClient(correo,password);
+            if(client.checkConnection()){
+                clientResponse.setStyle("-fx-text-fill: green;");
+                clientResponse.setText("Login exitoso");
+                App.mailScreen(correo,password);
+            }
+            else {
+                clientResponse.setStyle("-fx-text-fill: red;");
+                clientResponse.setText("Login fallido");
+            }
+        });
     }
 
     public BorderPane getView(){

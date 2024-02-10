@@ -20,6 +20,11 @@
                   <Font name="JetBrains Mono Regular" size="16.0" />
                </font>
             </Button>
+            <Label fx:id="clientResponse">
+               <font>
+                  <Font name="JetBrains Mono Regular" size="15.0" />
+               </font>
+            </Label>
          </children>
       </VBox>
    </center>

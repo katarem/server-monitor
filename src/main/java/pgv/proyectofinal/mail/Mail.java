@@ -12,10 +12,9 @@ public class Mail {
 	private String fecha;
 	
 	public Mail() {}
-	public Mail(String fromEmail, String toEmail, String asunto, String contenido, Date fecha) {
+	public Mail(String fromEmail, String asunto, String contenido, Date fecha) {
 		super();
 		this.fromEmail = fromEmail;
-		this.toEmail = toEmail;
 		this.asunto = asunto;
 		this.contenido = contenido;
 		setFecha(fecha);
@@ -56,7 +55,10 @@ public class Mail {
 
 	@Override
 	public String toString() {
-		return String.format("%s - %s - %s: %s", fromEmail,asunto, fecha, contenido.split("\n")[0]);
+		String resumen = "";
+		if(contenido.length()>=20) resumen = contenido.substring(0,20);
+		else resumen = contenido;
+		return String.format("%s - %s - %s: %s", fromEmail,asunto, fecha, resumen);
 	}
 	
 }

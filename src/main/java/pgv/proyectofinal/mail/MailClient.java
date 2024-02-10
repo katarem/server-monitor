@@ -1,18 +1,26 @@
 package pgv.proyectofinal.mail;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
+@Slf4j
 public class MailClient {
     private Properties props;
     private Session session;
-    
+
+    private final String mail;
+    private final String pwd;
+
+    public MailClient(String mail, String pwd){
+        this.mail = mail;
+        this.pwd = pwd;
+    }
+
     private void setPropsServerSMTP(){
         props = System.getProperties();
         props.put("mail.smtp.auth", "true");
@@ -31,22 +39,22 @@ public class MailClient {
         session = Session.getInstance(props);
     }
 
-    private Transport connectSMTPServer(String email, String pwd) throws MessagingException{
+    private Transport connectSMTPServer() throws MessagingException{
         Transport t = session.getTransport("smtp");
-        t.connect(props.getProperty("mail.smtp.host"), email, pwd);
+        t.connect(props.getProperty("mail.smtp.host"), mail, pwd);
         return t;
     }
 
-    private Message createMessageCore(String source, String dest, String asunto) throws AddressException, MessagingException{
+    private Message createMessageCore(String dest, String asunto) throws AddressException, MessagingException{
         MimeMessage message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(source));
+        message.setFrom(new InternetAddress(mail));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(dest));
         message.setSubject(asunto);
         return message;
     }
 
-    private Message createTextMessage(String source, String dest, String asunto, String textMessage) throws AddressException, MessagingException, IOException{
-        Message message = createMessageCore(source, dest, asunto);
+    private Message createTextMessage(String dest, String asunto, String textMessage) throws AddressException, MessagingException, IOException{
+        Message message = createMessageCore(dest, asunto);
 
         BodyPart bodyPart = new MimeBodyPart();
         bodyPart.setText(textMessage);
@@ -58,10 +66,10 @@ public class MailClient {
         return message;
     }
 
-    private Message createMessageWithFile(String emisor, String destinatario, String asunto, 
+    private Message createMessageWithFile(String destinatario, String asunto,
                                            String textoMensaje, String pathFichero) 
             throws MessagingException, AddressException, IOException {
-        Message mensaje = createMessageCore(emisor, destinatario, asunto);
+        Message mensaje = createMessageCore(destinatario, asunto);
 
         // Cuerpo del mensaje
         BodyPart bodyPart = new MimeBodyPart();
@@ -80,23 +88,23 @@ public class MailClient {
         return mensaje;
     }
 
-    public void sendTextMessage(String source, String dest, String asunto, String messageText, String mail,String pwd) throws AddressException, MessagingException, IOException{
+    public void sendTextMessage(String dest, String asunto, String messageText) throws AddressException, MessagingException, IOException{
         setPropsServerSMTP();
-        Message message = createTextMessage(source, dest, asunto, messageText);
-        Transport t = connectSMTPServer(mail, pwd);
+        Message message = createTextMessage(dest, asunto, messageText);
+        Transport t = connectSMTPServer();
         t.sendMessage(message, message.getAllRecipients());
         t.close();
     }
 
-    public void sendTextWithFile(String source, String dest, String asunto, String messageText, String mail, String pwd, String filePath) throws MessagingException{
+    public void sendTextWithFile(String dest, String asunto, String messageText, String filePath) throws MessagingException{
         setPropsServerSMTP();
-        Message message = createMessageCore(source, dest, asunto);
-        Transport t = connectSMTPServer(mail, pwd);
+        Message message = createMessageCore(dest, asunto);
+        Transport t = connectSMTPServer();
         t.sendMessage(message, message.getAllRecipients());
         t.close();
     }    
     
-    public boolean checkConnection(String mail, String pwd) {
+    public boolean checkConnection() {
     	try {
     		setPropsServerIMAP();
     		Store store = session.getStore("imaps");
@@ -109,7 +117,7 @@ public class MailClient {
     }
     
     
-	public List<Mail> receiveMail(String mail, String pwd) {
+	public List<Mail> receiveMail(int numeroCorreos) {
 		try {
 			setPropsServerIMAP();
 			Store store = session.getStore("imaps");
@@ -118,26 +126,34 @@ public class MailClient {
 			Folder folder = store.getFolder("inbox");
 			folder.open(Folder.READ_ONLY);
 			
-			Message[] messages = folder.getMessages();
+			var messages = Arrays.asList(folder.getMessages());
+            Collections.reverse(messages);
 			ArrayList<Mail> mails = new ArrayList<>();
-			
+
+            //DEBUG ONLY
+            int contador = 0;
+
+
+			log.info("comienzo a serializar correos");
 			for (Message message : messages) {
 				
-				//if(mails.size()==100) break; // para cuentas con demasiados correos
+				if(mails.size()==numeroCorreos) break; // para cuentas con demasiados correos
 				
 				var from = Arrays.toString(message.getFrom());
-				var to = Arrays.toString(message.getReplyTo());
 				var subject = message.getSubject();
 				var content = MessageContentParser.getTextFromMessage(message);
 				var date = message.getReceivedDate();
 				
-				var correo = new Mail(from,to,subject,content,date);
+				var correo = new Mail(from,subject,content,date);
 				mails.add(correo);
-				
+                contador++;
+				log.info("correo añadido " + contador);
 			}
+
+            log.info("termine de serializar correos");
 			return mails;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 			return null;
 		}
 	}

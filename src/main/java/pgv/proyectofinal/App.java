@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
+import pgv.proyectofinal.ui.MailController;
 import pgv.proyectofinal.ui.UIController;
 
 @Slf4j
@@ -28,7 +29,10 @@ public class App extends Application {
         log.info("App started!");
     }
 
-    public static void mailScreen(){
+    public static void mailScreen(String mail, String pwd){
+        MailController mailController = new MailController();
+        mailController.setUser(mail,pwd);
+        mailScene = new Scene(mailController.getView());
         App.stage.setScene(App.mailScene);
         App.stage.show();
     }

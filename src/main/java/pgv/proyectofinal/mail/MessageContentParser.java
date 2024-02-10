@@ -18,31 +18,31 @@ public class MessageContentParser {
 	        MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
 	        return getTextFromMimeMultipart(mimeMultipart);
 	    }
-	    return "";
+	    return "contenido desconocido";
 	}
 
 	private static String getTextFromMimeMultipart(MimeMultipart mimeMultipart)  throws MessagingException, IOException{
-	    String result = "";
+	    StringBuilder result = new StringBuilder();
 	    for (int i = 0; i < mimeMultipart.getCount(); i++) {
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 	        if (bodyPart.isMimeType("text/plain")) {
-	            return result + "\n" + bodyPart.getContent();
-	        } 
-	        result += parseBodyPart(bodyPart);
+	            return result.toString() + bodyPart.getContent();
+	        }
+	        result.append(parseBodyPart(bodyPart));
 	    }
-	    return result;
+	    return result.toString();
 	}
 
-	public static String parseBodyPart(BodyPart bodyPart) throws MessagingException, IOException { 
+	public static String parseBodyPart(BodyPart bodyPart) throws MessagingException, IOException {
 	    if (bodyPart.isMimeType("text/html")) {
-	        return "parte HTML";
-	    } 
+	        return "contenido HTML";
+	    }
 	    if (bodyPart.getContent() instanceof MimeMultipart){
 	        return getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
 	    }
 
 	    return "";
 	}
-	
-	
+
+
 }
