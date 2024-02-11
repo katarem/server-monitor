@@ -1,0 +1,18 @@
+<configuration>
+
+    <!-- Definir la raíz del logger -->
+    <root level="info">
+        <!-- Definir un FileAppender -->
+        <appender class="ch.qos.logback.core.FileAppender" name="FILE">
+            <file>mensajesobtenidos.log</file> <!-- Nombre del archivo de log -->
+            <append>true</append> <!-- Si debe añadirse al archivo existente (true) o sobrescribirlo (false) -->
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <!-- Asociar el FileAppender al root logger -->
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>
