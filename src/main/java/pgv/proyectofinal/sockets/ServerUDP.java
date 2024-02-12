@@ -8,6 +8,7 @@ import javafx.scene.control.Dialog;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import pgv.proyectofinal.App;
+import pgv.proyectofinal.ui.MainController;
 import pgv.proyectofinal.ui.ServerComponentController;
 
 import java.io.IOException;
@@ -26,15 +27,13 @@ public class ServerUDP extends Task<Void> {
 
     private boolean seguirArrancando = true;
 
-    private Accordion servidoresContainer;
+    private MainController controller;
 
-    private ArrayList<ServerComponentController> clientes;
-
-    public ServerUDP(@NonNull int port, Accordion servidoresContainer){
+    public ServerUDP(@NonNull int port, MainController controller){
         try {
             this.port = port;
             serverSocket = new DatagramSocket(port);
-            this.servidoresContainer = servidoresContainer;
+            this.controller = controller;
         } catch (SocketException e) {
             log.error(e.getLocalizedMessage());
         }
@@ -49,39 +48,30 @@ public class ServerUDP extends Task<Void> {
         }
     }
 
-    private void procesarMensaje(String mensaje){
-        var contenidoMensaje = mensaje.split(",");
+    private boolean procesarMensaje(String mensaje){
+        if(mensaje == null || mensaje.isBlank()){
+            return false;
+        }
+        var contenidoMensaje = mensaje.split(";");
         var idServidor = contenidoMensaje[0];
         var tipoMensaje = contenidoMensaje[1];
-
+        log.info(mensaje);
         if(tipoMensaje.equals("ALERTA")){
             var mensajeAlerta = contenidoMensaje[2];
             Platform.runLater(() -> {
                 App.showAlerta("ALERTA EN SERVIDOR " + idServidor, mensajeAlerta);
             });
         }
-        else {
-            if(Integer.parseInt(idServidor) > N_Clientes) appendCliente(mensaje);
-            else showCliente(Integer.parseInt(idServidor), mensaje);
+        else{
+            log.info("proceso cliente");
+            controller.procesarClient(mensaje);
         }
+
+        return true;
     }
 
-    private void appendCliente(String data){
-        ServerComponentController controller = new ServerComponentController();
-        controller.setData(data);
-        servidoresContainer.getPanes().add(controller.getView());
-        clientes.add(controller);
-
-    }
-
-    private void showCliente(int id, String data){
-        var cliente = clientes.stream().filter(c -> c.getId() == id).findAny();
-        if(cliente.isPresent()){
-            var index = servidoresContainer.getPanes().indexOf(cliente.get().getView());
-            servidoresContainer.getPanes().remove(cliente.get().getView());
-            cliente.get().setData(data);
-            servidoresContainer.getPanes().add(index, cliente.get().getView());
-        }
+    public void kill(){
+        this.seguirArrancando = false;
     }
 
     @Override
@@ -89,11 +79,12 @@ public class ServerUDP extends Task<Void> {
         try {
             log.info("estoy escuchando mensajes...");
             while(seguirArrancando){
-                byte[] receiveData = new byte[1024];
+                byte[] receiveData = new byte[2048];
                 DatagramPacket receivedPacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivedPacket);
                 String mensajeRecibido = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
                 procesarMensaje(mensajeRecibido);
+                Thread.sleep(500);
             }
         } catch (IOException  e) {
             log.error(e.getLocalizedMessage());

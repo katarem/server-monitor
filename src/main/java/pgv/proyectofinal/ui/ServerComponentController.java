@@ -25,8 +25,6 @@ public class ServerComponentController implements Initializable {
     @FXML
     private Label osLabel, cpuLabel, ramLabel;
 
-    private ClienteUDP cliente;
-
     public ServerComponentController(){
         try{
             FXMLLoader l = new FXMLLoader(getClass().getResource("/ServerComponentView.fxml"));
@@ -38,11 +36,12 @@ public class ServerComponentController implements Initializable {
     }
 
     public void setData(String data){
-        var cleandata = data.split(",");
+        var cleandata = data.split(";");
+        this.id = Integer.parseInt(cleandata[0]);
         view.setText("Servidor " + cleandata[0] + cleandata[2]);
         osLabel.setText(cleandata[3]);
-        cpuLabel.setText(cleandata[4]);
-        ramLabel.setText(cleandata[5]);
+        cpuLabel.setText(cleandata[4] + " " + cleandata[5]);
+        ramLabel.setText(cleandata[6]);
     }
 
 
