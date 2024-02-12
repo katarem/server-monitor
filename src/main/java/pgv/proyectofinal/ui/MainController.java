@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import pgv.proyectofinal.beans.LogBean;
 
 import java.awt.*;
 import java.io.File;
@@ -76,12 +77,16 @@ public class MainController implements Initializable {
             Map<String, Object> parameters = new HashMap<>();
 
             var logsHastaInforme = logs;
+
+            ArrayList<LogBean> beans = new ArrayList<>();
+            logsHastaInforme.forEach(l -> beans.add(new LogBean(l)));
+
             var timestamp = formatter.format(LocalDateTime.now());
             var numeroServidores = clientes.size();
             parameters.put("today.date",timestamp);
             parameters.put("server.number",numeroServidores);
 
-            JasperPrint print = JasperFillManager.fillReport(report, parameters, new JRBeanCollectionDataSource(logsHastaInforme));
+            JasperPrint print = JasperFillManager.fillReport(report, parameters, new JRBeanCollectionDataSource(beans));
 
             File pdfPath = new File("pdf");
             if(!pdfPath.exists()) pdfPath.mkdir();
