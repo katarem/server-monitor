@@ -19,14 +19,14 @@ public class ClienteUDP extends Thread{
     private int port;
 
     private boolean seguirArrancando = true;
-    SystemInfo info = new SystemInfo();
+    SystemInfo info;
     final int FACTOR_CONVERSION = 1000000000;
-    final double ramTotal = (double)info.getHardware().getMemory().getTotal()/FACTOR_CONVERSION;
-    final double freqTotal = (double)info.getHardware().getProcessor().getMaxFreq();
-    final double UMBRAL_RAM = ((ramTotal*7)/10);
-    final double UMBRAL_FREQ = ((freqTotal*7)/10);
-    final String os = info.getOperatingSystem().getManufacturer() + " " + info.getOperatingSystem().getFamily() + " " + info.getOperatingSystem().getVersionInfo().getVersion();
-    final String pcName = info.getHardware().getComputerSystem().getModel().equals("System Product Name") ? "PC Sobremesa" : info.getHardware().getComputerSystem().getModel();
+    private double ramTotal;
+    private double freqTotal;
+    private double UMBRAL_RAM;
+    private double UMBRAL_FREQ;
+    private String os;
+    private String pcName;
 
     public ClienteUDP(@NonNull String ip,@NonNull int port){
         try {
@@ -36,6 +36,13 @@ public class ClienteUDP extends Thread{
             this.port = port;
             NUMERO_CLIENTES++;
             this.id = NUMERO_CLIENTES;
+            info = new SystemInfo();
+            pcName = info.getHardware().getComputerSystem().getModel().equals("System Product Name") ? "PC Sobremesa" : info.getHardware().getComputerSystem().getModel();
+            os = info.getOperatingSystem().getManufacturer() + " " + info.getOperatingSystem().getFamily() + " " + info.getOperatingSystem().getVersionInfo().getVersion();
+            freqTotal = (double)info.getHardware().getProcessor().getMaxFreq();
+            ramTotal = (double)info.getHardware().getMemory().getTotal()/FACTOR_CONVERSION;
+            UMBRAL_RAM = ((ramTotal*7)/10);
+            UMBRAL_FREQ = ((freqTotal*7)/10);
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());
         }
@@ -52,13 +59,11 @@ public class ClienteUDP extends Thread{
             clientSocket = new DatagramSocket();
             log.info("empiezo a mandar mensajes...");
             while(seguirArrancando){
-
                 String datosPc = getDatosPc();
-
                 byte[] sendData = datosPc.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ip,port);
                 clientSocket.send(sendPacket);
-                Thread.sleep(5000);
+                Thread.sleep(2500);
             }
         } catch (IOException | InterruptedException e) {
             log.error(e.getLocalizedMessage());

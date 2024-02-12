@@ -37,12 +37,12 @@ public class ServerComponentController implements Initializable {
         }
     }
 
-    public void setCliente(String data){
-        var cleandata = data.split("|");
-        view.setText(cleandata[0]);
-        osLabel.setText(cleandata[1]);
-        cpuLabel.setText(cleandata[2]);
-        ramLabel.setText(cleandata[3]);
+    public void setData(String data){
+        var cleandata = data.split(",");
+        view.setText("Servidor " + cleandata[0] + cleandata[2]);
+        osLabel.setText(cleandata[3]);
+        cpuLabel.setText(cleandata[4]);
+        ramLabel.setText(cleandata[5]);
     }
 
 

@@ -21,20 +21,6 @@
             <artifactId>oshi-core</artifactId>
             <version>6.4.11</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
-        <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>3.10.0</version>
-        </dependency>
-        <!--JAVAMail para Gmail -->
-
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-
         <dependency>
             <groupId>com.github.katarem</groupId>
             <artifactId>MisLibrerias</artifactId>
