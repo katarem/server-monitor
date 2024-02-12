@@ -1,10 +1,12 @@
 package pgv.proyectofinal.ui;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +24,11 @@ public class MainController implements Initializable {
     @FXML
     private Accordion servidoresContainer;
 
+    @FXML
+    private ListView<String> logsView;
+
+    private ArrayList<String> logs;
+
     private ArrayList<ServerComponentController> clientes;
 
 
@@ -29,8 +36,12 @@ public class MainController implements Initializable {
         var id = Integer.parseInt(data.split(";")[0]);
         var existsCliente = clientes.stream().filter(c -> c.getId() == id).findAny();
         if(existsCliente.isPresent()) updateClient(existsCliente.get(),data);
-        else
-            addClient(data);
+        else addClient(data);
+    }
+
+
+    private void updateLogs(){
+        logsView.setItems(FXCollections.observableList(logs));
     }
 
 
@@ -42,7 +53,11 @@ public class MainController implements Initializable {
            cliente.setNumeroCliente(clientes.size()+1);
            cliente.setData(data);
            clientes.add(cliente);
-           Platform.runLater(() -> this.servidoresContainer.getPanes().add(cliente.getView()));
+           Platform.runLater(() -> {
+               logs.add("[AGREGADO] Servidor " + cliente.getNumeroCliente() + ": " + data);
+               updateLogs();
+               this.servidoresContainer.getPanes().add(cliente.getView());
+           });
        }catch (Exception e){
            log.error(e.getLocalizedMessage());
        }
@@ -51,6 +66,8 @@ public class MainController implements Initializable {
 
     private void updateClient(ServerComponentController client, String data){
         Platform.runLater(() -> {
+            logs.add("[ACTUALIZADO] Servidor " + client.getNumeroCliente() + ": " + data);
+            updateLogs();
             client.setData(data);
         });
     }
@@ -70,6 +87,9 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         clientes = new ArrayList<>();
+        logs = new ArrayList<>();
+        logsView.setItems(FXCollections.observableList(logs));
+
 
     }
     public BorderPane getView() {

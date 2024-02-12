@@ -9,21 +9,21 @@ import java.util.Arrays;
 
 @Getter
 public class PcStats {
-    private SystemInfo info;
+    private final SystemInfo info;
     private final int FACTOR_CONVERSION = 1000000000;
-    private double MAX_RAM;
-    private double UMBRAL_RAM;
+    private final double MAX_RAM;
+    private final double UMBRAL_RAM;
     private final int UMBRAL_CPU_USAGE = 70;
     private double currentFreq;
     private double currentRam;
     private double cpuUsage;
-    private String os;
-    private String pcName;
+    private final String os;
+    private final String pcName;
 
     public PcStats(){
         this.info = new SystemInfo();
         this.MAX_RAM = info.getHardware().getMemory().getTotal();
-        this.UMBRAL_RAM = (MAX_RAM * 7)/10;
+        this.UMBRAL_RAM = (MAX_RAM * 70)/100;
 
         this.pcName = info.getHardware().getComputerSystem().getModel().equals("System Product Name") ? "PC Sobremesa" : info.getHardware().getComputerSystem().getModel();
         this.os = info.getOperatingSystem().getManufacturer() + " " + info.getOperatingSystem().getFamily() + " " + info.getOperatingSystem().getVersionInfo().getVersion();
@@ -56,8 +56,19 @@ public class PcStats {
         return currentFreq;
     }
 
+    public double getReadableMAXRam(){
+        return getMAX_RAM() / FACTOR_CONVERSION;
+    }
+
+    public double getReadableRam(){
+        return getCurrentRam() / FACTOR_CONVERSION;
+    }
+
+
+
     @Override
     public String toString() {
-        return String.format("%s;%s;%.2fGHz;%s;%.2fGB/%.2fGB",pcName,os,getCurrentFreq(),(getCpuUsage()/FACTOR_CONVERSION) + "%",(getCurrentRam()/FACTOR_CONVERSION),(MAX_RAM/FACTOR_CONVERSION));
+        var usoCPU = String.format("%.2f",getCpuUsage()/FACTOR_CONVERSION);
+        return String.format("%s;%s;%.2fGHz;%s;%.2fGB/%.2fGB",pcName,os,getCurrentFreq(),(usoCPU + "%"),(getCurrentRam()/FACTOR_CONVERSION),(MAX_RAM/FACTOR_CONVERSION));
     }
 }

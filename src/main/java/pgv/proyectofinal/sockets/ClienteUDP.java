@@ -70,8 +70,9 @@ public class ClienteUDP extends Thread{
     }
 
     private String getDatosPc(){
-        if(info.isDangerousRamUsage()) return String.format("%d;ALERTA;DEMASIADA RAM EN USO %.2fGB/%.2fGB",hashCode(),info.getCurrentRam(),info.getMAX_RAM());
-        if(info.isDangerousCpuUsage()) return String.format("%d;ALERTA;USO EN CPU ALTO %s",hashCode(),info.getCpuUsage() + "%");
+        String usoCPU = String.format("%.2f",info.getCpuUsage());
+        if(info.isDangerousRamUsage()) return String.format("%d;ALERTA;DEMASIADA RAM EN USO %.2fGB/%.2fGB",hashCode(),info.getReadableRam(),info.getReadableMAXRam());
+        if(info.isDangerousCpuUsage()) return String.format("%d;ALERTA;USO EN CPU ALTO %s",hashCode(),usoCPU + "%");
         return String.format("%d;INFO;%s",hashCode(),info);
     }
 }
