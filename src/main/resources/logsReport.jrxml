@@ -46,9 +46,9 @@ AUTOR: CRISTIAN M. ESPINOSA LEAL 2º DAM B]]></text>
 		<band height="61" splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="125" splitType="Stretch">
+		<band height="55" splitType="Stretch">
 			<textField>
-				<reportElement x="32" y="0" width="490" height="120" uuid="92144ba2-32b8-45c2-9e67-ce99653eba89">
+				<reportElement x="32" y="0" width="490" height="54" uuid="92144ba2-32b8-45c2-9e67-ce99653eba89">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="65b3bfc8-d156-45c4-815a-3315d1e88520"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{content}]]></textFieldExpression>
