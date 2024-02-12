@@ -56,14 +56,7 @@ public class ServerUDP extends Task<Void> {
         var idServidor = contenidoMensaje[0];
         var tipoMensaje = contenidoMensaje[1];
         log.info(mensaje);
-        if(tipoMensaje.equals("ALERTA")){
-            var mensajeAlerta = contenidoMensaje[2];
-            Platform.runLater(() -> {
-                App.showAlerta("ALERTA EN SERVIDOR " + idServidor, mensajeAlerta);
-            });
-        }
-        else
-            controller.procesarClient(mensaje);
+        controller.procesarClient(mensaje);
         return true;
     }
 

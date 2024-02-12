@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import pgv.proyectofinal.App;
 import pgv.proyectofinal.beans.LogBean;
 
 import java.awt.*;
@@ -39,8 +40,10 @@ public class MainController implements Initializable {
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     public void procesarClient(String data){
+
         var id = Integer.parseInt(data.split(";")[0]);
         var existsCliente = clientes.stream().filter(c -> c.getId() == id).findAny();
+        var tipoMensaje = data.split(";")[1];
         if(existsCliente.isPresent()) updateClient(existsCliente.get(),data);
         else addClient(data);
     }
@@ -55,20 +58,51 @@ public class MainController implements Initializable {
     private void addClient(String data){
        try {
            ServerComponentController cliente = new ServerComponentController();
+           var tipoMensaje = data.split(";")[1];
            cliente.setId(Integer.parseInt(data.split(";")[0]));
            cliente.setNumeroCliente(clientes.size()+1);
            cliente.setData(data);
            clientes.add(cliente);
-           Platform.runLater(() -> {
-               logs.add("[AGREGADO] "  + formatter.format(LocalDateTime.now()) + " Servidor " + cliente.getNumeroCliente() + ": " + data);
-               updateLogs();
-               this.servidoresContainer.getPanes().add(cliente.getView());
-           });
+           if(tipoMensaje.equals("ALERTA")){
+               var mensajeAlerta = data.split(";")[2];
+               Platform.runLater(() -> {
+                   logs.add("[ALERTA] " + formatter.format(LocalDateTime.now()) + " Servidor " + cliente.getNumeroCliente() + ": " + data);
+                   updateLogs();
+                   App.showAlerta("ALERTA EN SERVIDOR " + cliente.getNumeroCliente() + ": ", mensajeAlerta);
+               });
+           }
+           else{
+               Platform.runLater(() -> {
+                   logs.add("[AGREGADO] "  + formatter.format(LocalDateTime.now()) + " Servidor " + cliente.getNumeroCliente() + ": " + data);
+                   updateLogs();
+                   this.servidoresContainer.getPanes().add(cliente.getView());
+               });
+           }
        }catch (Exception e){
            log.error(e.getLocalizedMessage());
        }
 
     }
+    private void updateClient(ServerComponentController client, String data){
+        var tipoMensaje = data.split(";")[1];
+        if(tipoMensaje.equals("ALERTA")){
+            var mensajeAlerta = data.split(";")[2];
+            Platform.runLater(() -> {
+                logs.add("[ALERTA] " + formatter.format(LocalDateTime.now()) + " Servidor " + client.getNumeroCliente() + ": " + data);
+                updateLogs();
+                App.showAlerta("ALERTA EN SERVIDOR " + client.getNumeroCliente() + ": ", mensajeAlerta);
+            });
+        }
+        else {
+            Platform.runLater(() -> {
+                logs.add("[ACTUALIZADO] " + formatter.format(LocalDateTime.now()) + " Servidor " + client.getNumeroCliente() + ": " + data);
+                updateLogs();
+                client.setData(data);
+            });
+        }
+    }
+
+
 
     @FXML
     private void generarInforme() {
@@ -105,13 +139,7 @@ public class MainController implements Initializable {
     }
 
 
-    private void updateClient(ServerComponentController client, String data){
-        Platform.runLater(() -> {
-            logs.add("[ACTUALIZADO] " + formatter.format(LocalDateTime.now()) + " Servidor " + client.getNumeroCliente() + ": " + data);
-            updateLogs();
-            client.setData(data);
-        });
-    }
+
 
 
 
