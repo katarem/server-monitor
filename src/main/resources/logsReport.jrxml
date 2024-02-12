@@ -43,19 +43,12 @@ AUTOR: CRISTIAN M. ESPINOSA LEAL 2º DAM B]]></text>
 		<band height="35" splitType="Stretch"/>
 	</pageHeader>
 	<columnHeader>
-		<band height="61" splitType="Stretch">
-			<staticText>
-				<reportElement x="278" y="0" width="100" height="30" uuid="64e9fe0c-c4e6-46c5-bfbb-3de079fe9d0b">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="65b3bfc8-d156-45c4-815a-3315d1e88520"/>
-				</reportElement>
-				<text><![CDATA[content]]></text>
-			</staticText>
-		</band>
+		<band height="61" splitType="Stretch"/>
 	</columnHeader>
 	<detail>
 		<band height="125" splitType="Stretch">
 			<textField>
-				<reportElement x="250" y="47" width="100" height="30" uuid="92144ba2-32b8-45c2-9e67-ce99653eba89">
+				<reportElement x="32" y="0" width="490" height="120" uuid="92144ba2-32b8-45c2-9e67-ce99653eba89">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="65b3bfc8-d156-45c4-815a-3315d1e88520"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{content}]]></textFieldExpression>
