@@ -8,13 +8,12 @@ import pgv.proyectofinal.hw.PcStats;
 import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class ClienteUDP extends Thread{
 
     private DatagramSocket clientSocket;
-    private static int NUMERO_CLIENTES = 0;
 
-    private int id;
     private InetAddress ip;
     private int port;
 
@@ -28,8 +27,6 @@ public class ClienteUDP extends Thread{
             this.setName("cliente-udp");
             this.ip = InetAddress.getByName(ip);
             this.port = port;
-            NUMERO_CLIENTES++;
-            this.id = NUMERO_CLIENTES;
 
             info = new PcStats();
         } catch (Exception e) {
@@ -59,9 +56,22 @@ public class ClienteUDP extends Thread{
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClienteUDP that = (ClienteUDP) o;
+        return port == that.port && seguirArrancando == that.seguirArrancando && Objects.equals(clientSocket, that.clientSocket) && Objects.equals(ip, that.ip) && Objects.equals(info, that.info);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(clientSocket, ip, port, seguirArrancando, info);
+    }
+
     private String getDatosPc(){
-        if(info.isDangerousRamUsage()) return String.format("%d;ALERTA;DEMASIADA RAM EN USO %.2fGB/%.2fGB",id,info.getCurrentRam(),info.getMAX_RAM());
-        if(info.isDangerousCpuUsage()) return String.format("%d;ALERTA;USO EN CPU ALTO %s",id,info.getCpuUsage() + "%");
-        return String.format("%d;INFO;%s",id,info);
+        if(info.isDangerousRamUsage()) return String.format("%d;ALERTA;DEMASIADA RAM EN USO %.2fGB/%.2fGB",hashCode(),info.getCurrentRam(),info.getMAX_RAM());
+        if(info.isDangerousCpuUsage()) return String.format("%d;ALERTA;USO EN CPU ALTO %s",hashCode(),info.getCpuUsage() + "%");
+        return String.format("%d;INFO;%s",hashCode(),info);
     }
 }

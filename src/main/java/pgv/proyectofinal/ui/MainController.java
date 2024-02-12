@@ -26,14 +26,11 @@ public class MainController implements Initializable {
 
 
     public void procesarClient(String data){
-        log.info("procesando cliente....");
         var id = Integer.parseInt(data.split(";")[0]);
         var existsCliente = clientes.stream().filter(c -> c.getId() == id).findAny();
         if(existsCliente.isPresent()) updateClient(existsCliente.get(),data);
-        else {
-            log.info("agrego cliente");
+        else
             addClient(data);
-        }
     }
 
 
@@ -41,6 +38,8 @@ public class MainController implements Initializable {
     private void addClient(String data){
        try {
            ServerComponentController cliente = new ServerComponentController();
+           cliente.setId(Integer.parseInt(data.split(";")[0]));
+           cliente.setNumeroCliente(clientes.size()+1);
            cliente.setData(data);
            clientes.add(cliente);
            Platform.runLater(() -> this.servidoresContainer.getPanes().add(cliente.getView()));

@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pgv.proyectofinal.sockets.ClienteUDP;
 
@@ -15,9 +16,14 @@ import java.util.ResourceBundle;
 
 @Slf4j
 @Getter
+@Setter
 public class ServerComponentController implements Initializable {
 
     private int id;
+
+    public static int n_clientes = 0;
+
+    private int numeroCliente;
 
     @FXML
     private TitledPane view;
@@ -37,8 +43,7 @@ public class ServerComponentController implements Initializable {
 
     public void setData(String data){
         var cleandata = data.split(";");
-        this.id = Integer.parseInt(cleandata[0]);
-        view.setText("Servidor " + cleandata[0] + cleandata[2]);
+        view.setText("Servidor " + numeroCliente + cleandata[2]);
         osLabel.setText(cleandata[3]);
         cpuLabel.setText(cleandata[4] + " " + cleandata[5]);
         ramLabel.setText(cleandata[6]);
