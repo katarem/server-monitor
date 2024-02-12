@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.0.final using JasperReports Library version 6.21.0-4f56c4f36cd19e17675219a9ac4692d5f0f13b06  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a059f19a-9093-4f9a-880f-77045f26aead">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="server.number" class="java.lang.Integer"/>
+	<parameter name="today.date" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="content" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="130" splitType="Stretch">
+			<textField>
+				<reportElement x="280" y="88" width="100" height="22" uuid="0cb6f116-1a24-4a5d-ad46-5035a1e9a29f"/>
+				<textFieldExpression><![CDATA[$P{server.number}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="140" y="88" width="140" height="22" uuid="18cfd49b-00f0-4169-938d-c8dfbf282564"/>
+				<text><![CDATA[NUMERO SERVIDORES:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="110" width="140" height="20" uuid="4fc31454-9486-4b21-9580-8285a147e57d"/>
+				<text><![CDATA[FECHA]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="280" y="110" width="100" height="20" uuid="1dd5fb4f-e5c9-4f10-ba8c-a2f620c39495"/>
+				<textFieldExpression><![CDATA[$P{today.date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="80" y="0" width="400" height="70" uuid="212c975e-adc4-4fcc-98d2-fefd0aa0b446"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA[INFORME DE MONITOR DE SERVIDORES
+AUTOR: CRISTIAN M. ESPINOSA LEAL 2º DAM B]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="278" y="0" width="100" height="30" uuid="64e9fe0c-c4e6-46c5-bfbb-3de079fe9d0b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="65b3bfc8-d156-45c4-815a-3315d1e88520"/>
+				</reportElement>
+				<text><![CDATA[content]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<textField>
+				<reportElement x="250" y="47" width="100" height="30" uuid="92144ba2-32b8-45c2-9e67-ce99653eba89">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="65b3bfc8-d156-45c4-815a-3315d1e88520"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{content}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
