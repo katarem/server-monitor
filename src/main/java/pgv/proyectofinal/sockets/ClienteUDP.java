@@ -49,7 +49,7 @@ public class ClienteUDP extends Thread{
 
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ip,port);
                 clientSocket.send(sendPacket);
-                Thread.sleep(500);
+                Thread.sleep(1000);
             }
         } catch (IOException | InterruptedException e) {
            e.printStackTrace();

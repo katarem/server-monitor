@@ -21,9 +21,6 @@ import java.util.ArrayList;
 public class ServerUDP extends Task<Void> {
 
     private DatagramSocket serverSocket;
-    private int port;
-
-    private int N_Clientes = 0;
 
     private boolean seguirArrancando = true;
 
@@ -31,7 +28,6 @@ public class ServerUDP extends Task<Void> {
 
     public ServerUDP(@NonNull int port, MainController controller){
         try {
-            this.port = port;
             serverSocket = new DatagramSocket(port);
             this.controller = controller;
         } catch (SocketException e) {
@@ -41,7 +37,6 @@ public class ServerUDP extends Task<Void> {
 
     public ServerUDP(@NonNull int port){
         try {
-            this.port = port;
             serverSocket = new DatagramSocket(port);
         } catch (SocketException e) {
             log.error(e.getLocalizedMessage());
@@ -49,12 +44,7 @@ public class ServerUDP extends Task<Void> {
     }
 
     private boolean procesarMensaje(String mensaje){
-        if(mensaje == null || mensaje.isBlank()){
-            return false;
-        }
-        var contenidoMensaje = mensaje.split(";");
-        var idServidor = contenidoMensaje[0];
-        var tipoMensaje = contenidoMensaje[1];
+        if(mensaje == null || mensaje.isBlank()) return false;
         log.info(mensaje);
         controller.procesarClient(mensaje);
         return true;
@@ -67,14 +57,13 @@ public class ServerUDP extends Task<Void> {
     @Override
     protected Void call() throws Exception {
         try {
-            log.info("estoy escuchando mensajes...");
             while(seguirArrancando){
                 byte[] receiveData = new byte[2048];
                 DatagramPacket receivedPacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivedPacket);
                 String mensajeRecibido = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
                 procesarMensaje(mensajeRecibido);
-                Thread.sleep(500);
+                Thread.sleep(1000);
             }
         } catch (IOException  e) {
             log.error(e.getLocalizedMessage());
