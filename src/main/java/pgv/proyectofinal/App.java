@@ -36,15 +36,8 @@ public class App extends Application {
             server.kill();
         });
 
-
-
-
         App.stage.setScene(App.mainScene);
         App.stage.show();
-        log.info("App started!");
-
-
-
     }
     public static void showAlerta(String title, String mensaje){
         alerta.setTitle(title);

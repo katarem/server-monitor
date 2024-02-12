@@ -9,12 +9,17 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ResourceBundle;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Slf4j
 public class MainController implements Initializable {
@@ -31,7 +36,7 @@ public class MainController implements Initializable {
 
     private ArrayList<ServerComponentController> clientes;
 
-
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     public void procesarClient(String data){
         var id = Integer.parseInt(data.split(";")[0]);
         var existsCliente = clientes.stream().filter(c -> c.getId() == id).findAny();
@@ -54,7 +59,7 @@ public class MainController implements Initializable {
            cliente.setData(data);
            clientes.add(cliente);
            Platform.runLater(() -> {
-               logs.add("[AGREGADO] Servidor " + cliente.getNumeroCliente() + ": " + data);
+               logs.add("[AGREGADO] "  + formatter.format(LocalDateTime.now()) + " Servidor " + cliente.getNumeroCliente() + ": " + data);
                updateLogs();
                this.servidoresContainer.getPanes().add(cliente.getView());
            });
@@ -64,9 +69,40 @@ public class MainController implements Initializable {
 
     }
 
+    @FXML
+    private void generarInforme() {
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/logsReport.jrxml"));
+            Map<String, Object> parameters = new HashMap<>();
+
+            var logsHastaInforme = logs;
+            var timestamp = formatter.format(LocalDateTime.now());
+            var numeroServidores = clientes.size();
+            parameters.put("today.date",timestamp);
+            parameters.put("server.number",numeroServidores);
+
+            JasperPrint print = JasperFillManager.fillReport(report, parameters, new JRBeanCollectionDataSource(logsHastaInforme));
+
+            File pdfPath = new File("pdf");
+            if(!pdfPath.exists()) pdfPath.mkdir();
+
+            var reportPDF = "pdf/logs_" + System.currentTimeMillis() + ".pdf";
+
+            JasperExportManager.exportReportToPdfFile(print,reportPDF);
+
+            Desktop.getDesktop().open(new File(reportPDF));
+
+        } catch(JRException | IOException e){
+            log.error(e.getLocalizedMessage());
+        }
+
+
+    }
+
+
     private void updateClient(ServerComponentController client, String data){
         Platform.runLater(() -> {
-            logs.add("[ACTUALIZADO] Servidor " + client.getNumeroCliente() + ": " + data);
+            logs.add("[ACTUALIZADO] " + formatter.format(LocalDateTime.now()) + " Servidor " + client.getNumeroCliente() + ": " + data);
             updateLogs();
             client.setData(data);
         });

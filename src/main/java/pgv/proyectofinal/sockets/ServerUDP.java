@@ -62,11 +62,8 @@ public class ServerUDP extends Task<Void> {
                 App.showAlerta("ALERTA EN SERVIDOR " + idServidor, mensajeAlerta);
             });
         }
-        else{
-            log.info("proceso cliente");
+        else
             controller.procesarClient(mensaje);
-        }
-
         return true;
     }
 
